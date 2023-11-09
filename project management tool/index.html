@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Management Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        section {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+        }
+
+        .task-list {
+            flex: 1;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .task {
+            background-color: #f9f9f9;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .add-task {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .reset-btn {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        .close-btn {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Additional styles for the assignment feature */
+        .task-member {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .task-member input {
+            margin-left: 10px;
+        }
+
+        .task-info {
+            margin-top: 10px;
+        }
+
+        .assigned-tasks {
+            margin-top: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .assigned-task {
+            margin-top: 10px;
+            position: relative;
+        }
+
+        .task-actions {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Project Management Tool</h1>
+    </header>
+
+    <section>
+        <div class="task-list" id="todo-list">
+            <h2>To Do</h2>
+            <!-- Tasks will be dynamically added here -->
+            <button class="add-task" onclick="openModal()">Add Task</button>
+        </div>
+
+        <div class="task-list" id="in-progress-list">
+            <h2>In Progress</h2>
+            <!-- In Progress tasks go here -->
+        </div>
+
+        <div class="task-list" id="completed-list">
+            <h2>Completed</h2>
+            <!-- Completed tasks go here -->
+        </div>
+    </section>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <label for="taskName">Task Name:</label>
+            <input type="text" id="taskName" placeholder="Enter task name">
+
+            <label for="projectName">Project Name:</label>
+            <input type="text" id="projectName" placeholder="Enter project name">
+
+            <div class="task-member">
+                <label for="assignee">Assignee:</label>
+                <input type="text" id="assignee" placeholder="Enter assignee name">
+            </div>
+
+            <label for="status">Status:</label>
+            <input type="text" id="status" placeholder="Enter task status">
+
+            <div class="task-info">
+                <strong>Task Information:</strong><br>
+                <span id="taskInfo"></span>
+            </div>
+
+            <button class="close-btn" onclick="addTask()">Add Task</button>
+            <button class="close-btn" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+    <div class="assigned-tasks">
+        <h2>Assigned Tasks</h2>
+        <div id="assignedTasks"></div>
+    </div>
+
+    <button class="reset-btn" onclick="resetTasks()">Reset All Tasks</button>
+
+    <footer>
+        Created by Yuvaraj Edunuri
+    </footer>
+
+    <script>
+        function openModal() {
+            document.getElementById('modal').style.display = 'flex';
+            // Reset input fields and task info when opening the modal
+            document.getElementById('taskName').value = '';
+            document.getElementById('projectName').value = '';
+            document.getElementById('assignee').value = '';
+            document.getElementById('status').value = '';
+            document.getElementById('taskInfo').innerText = '';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        function addTask() {
+            // Get task details
+            var taskName = document.getElementById('taskName').value;
+            var projectName = document.getElementById('projectName').value;
+            var assignee = document.getElementById('assignee').value;
+            var status = document.getElementById('status').value;
+
+            // Create task element
+            var taskElement = document.createElement('div');
+            taskElement.className = 'task';
+            taskElement.innerHTML = taskName + '<br><span>Project: ' + projectName + '</span><br><span>Assignee: ' + assignee + '</span><br><span>Status: ' + status + '</span>';
+
+            // Add task to the To Do list
+            document.getElementById('todo-list').appendChild(taskElement);
+
+            // Display task information
+            document.getElementById('taskInfo').innerText = 'Task: ' + taskName + ', Project: ' + projectName + ', Assignee: ' + assignee + ', Status: ' + status;
+
+            // Display assigned tasks for the specific member
+            displayAssignedTasks(assignee);
+
+            // Close the modal
+            closeModal();
+        }
+
+        function displayAssignedTasks(assignee) {
+            // Create task element for assigned tasks
+            var assignedTaskElement = document.createElement('div');
+            assignedTaskElement.className = 'assigned-task';
+            assignedTaskElement.innerHTML = '<strong>' + assignee + '</strong><br>' + document.getElementById('taskInfo').innerText;
+
+            // Clear the assigned tasks list before adding
+            document.getElementById('assignedTasks').innerHTML = '';
+
+            // Add task to the assigned tasks list
+            document.getElementById('assignedTasks').appendChild(assignedTaskElement);
+
+            // Add action buttons to move the task to In Progress and Completed lists
+            var taskActions = document.createElement('div');
+            taskActions.className = 'task-actions';
+
+            var inProgressButton = document.createElement('button');
+            inProgressButton.textContent = 'In Progress';
+            inProgressButton.onclick = function () {
+                moveTask(assignedTaskElement, 'in-progress-list');
+            };
+
+            var completedButton = document.createElement('button');
+            completedButton.textContent = 'Completed';
+            completedButton.onclick = function () {
+                moveTask(assignedTaskElement, 'completed-list');
+            };
+
+            taskActions.appendChild(inProgressButton);
+            taskActions.appendChild(completedButton);
+
+            assignedTaskElement.appendChild(taskActions);
+        }
+
+        function moveTask(taskElement, destinationListId) {
+            // Remove task from assigned tasks list
+            taskElement.remove();
+
+            // Add task to the destination list
+            document.getElementById(destinationListId).appendChild(taskElement);
+        }
+
+        function resetTasks() {
+    // Clear all tasks and reset to initial state
+    document.getElementById('todo-list').innerHTML = '<h2>To Do</h2><button class="add-task" onclick="openModal()">Add Task</button>';
+    document.getElementById('in-progress-list').innerHTML = '<h2>In Progress</h2>';
+    document.getElementById('completed-list').innerHTML = '<h2>Completed</h2>';
+    
+    // Clear the assigned tasks list
+    document.getElementById('assignedTasks').innerHTML = '<h2>Assigned Tasks</h2>';
+
+    // Clear the assigned tasks data
+    assignedTasksData = {};
+
+
+    // Reset the assigned tasks data
+    var assignedTasksData = {};
+    
+
+}
+
+    </script>
+
+</body>
+</html>
